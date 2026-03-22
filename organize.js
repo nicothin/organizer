@@ -1,9 +1,9 @@
-const fs = require('fs-extra');
-const path = require('path');
-const { exiftool } = require('exiftool-vendored');
-const pLimit = require('p-limit').default;
-const readline = require('readline');
-const cliProgress = require('cli-progress');
+import fs from 'fs-extra';
+import path from 'path';
+import { exiftool } from 'exiftool-vendored';
+import pLimit from 'p-limit';
+import readline from 'readline';
+import cliProgress from 'cli-progress';
 
 const limit = pLimit(5);
 
@@ -83,7 +83,9 @@ async function getUserInput() {
   console.log(config);
 
   const confirm = await ask('\nContinue? (y/n): ');
-  if (confirm.toLowerCase() === 'n') {
+  const yesAnswers = ['y', 'yes', 'Y', 'Yes', 'YES', 'д', 'да'];
+  if (!yesAnswers.includes(confirm)) {
+    console.log('Operation cancelled.');
     rl.close();
     process.exit(0);
   }
