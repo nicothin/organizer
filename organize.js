@@ -1,14 +1,14 @@
 const fs = require('fs-extra');
 const path = require('path');
 const { exiftool } = require('exiftool-vendored');
-const pLimit = require('p-limit');
+const pLimit = require('p-limit').default;
 const readline = require('readline');
 const cliProgress = require('cli-progress');
 
 const limit = pLimit(5);
 
-const DEFAULT_SOURCE = '/media/nicothin/largeBackup/vera/';
-const DEFAULT_TARGET = '/media/nicothin/largeBackup/vera/photoarchive';
+const DEFAULT_SOURCE = '/media/nicothin/BackUps/TEMP/';
+const DEFAULT_TARGET = '/media/nicothin/BackUps/TEMP/photoarchive';
 
 const ALLOWED_EXT = [
   '.jpg', '.jpeg', '.png', '.heic', '.heif', '.webp', '.tiff', '.tif',
