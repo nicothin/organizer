@@ -38,7 +38,7 @@ async function getDate(filePath) {
       );
     }
   } catch (e) {
-    console.warn(`EXIF ошибка: ${filePath} → fallback на mtime`);
+    console.warn(`EXIF error: ${filePath} → fallback to mtime`);
   }
 
   const stats = await fs.stat(filePath);
@@ -62,7 +62,7 @@ async function processFile(fullPath) {
 
   let finalPath = originalTargetPath;
 
-  // Переименовываем ТОЛЬКО если есть конфликт
+  // Rename ONLY if there's a conflict
   if (await fs.pathExists(originalTargetPath)) {
     const dateSuffix = formatDate(date);
 
@@ -110,10 +110,10 @@ async function processDir(dir) {
 
 processDir(SOURCE_DIR)
   .then(() => {
-    console.log('Готово!');
+    console.log('Done!');
     exiftool.end();
   })
   .catch(err => {
-    console.error('Критическая ошибка:', err);
+    console.error('Critical error:', err);
     exiftool.end();
   });

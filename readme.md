@@ -1,24 +1,24 @@
 # 📸 Photo Archive Organizer
 
-Скрипт для сортировки фото и видео по дате съёмки (EXIF) в структуру `YYYY-MM`.
+Script for sorting photos and videos by capture date (EXIF) into `YYYY-MM` structure.
 
 ---
 
-## 🚀 Возможности
+## 🚀 Features
 
-- Рекурсивный обход директории
-- Определение даты:
+- Recursive directory traversal
+- Date detection:
   - EXIF (`DateTimeOriginal`, `CreateDate`, `CreationDate`)
   - fallback → `mtime`
-- Сортировка по папкам: `photoarchive/YYYY-MM/`
-- Переименование **только при конфликте имён**
-- Ограниченный параллелизм (подходит для больших архивов)
+- Sorting into folders: `photoarchive/YYYY-MM/`
+- Renaming **only when there's a name conflict**
+- Limited parallelism (suitable for large archives)
 
 ---
 
-## 📁 Поддерживаемые форматы
+## 📁 Supported Formats
 
-### Изображения
+### Images
 - `.jpg`, `.jpeg`, `.png`
 - `.heic`, `.heif`
 - `.webp`, `.tiff`, `.tif`
@@ -27,78 +27,78 @@
 - `.cr2`, `.cr3`, `.nef`, `.arw`
 - `.dng`, `.rw2`, `.orf`
 
-### Видео
+### Video
 - `.mp4`, `.mov`
 - `.avi`, `.mkv`
 - `.3gp`, `.mts`, `.m2ts`
 - `.wmv`
 
-Расширения не чувствительны к регистру (`.JPG` = `.jpg`)
+File extensions are case-insensitive (`.JPG` = `.jpg`)
 
 ---
 
-## ⚙️ Установка
+## ⚙️ Installation
 
 ```bash
-npm install fs-extra exiftool-vendored p-limit
+npm install
 ```
 
 ---
 
-## ▶️ Использование
+## ▶️ Usage
 
-Укажи пути в файле:
+Specify paths in the file:
 
 ```js
 const SOURCE_DIR = '/path/to/source';
 const TARGET_BASE = '/path/to/photoarchive';
 ```
 
-Запуск:
+Run:
 
 ```bash
-node index.js
+npm run
 ```
 
 ---
 
-## 📦 Как работает
+## 📦 How It Works
 
-1. Скрипт проходит по всем файлам в `SOURCE_DIR`
-2. Для каждого файла:
-   - получает дату из EXIF
-   - если нет → берёт `mtime`
-3. Определяет папку назначения: `YYYY-MM`
-1. Перемещает файл
-
----
-
-## 🏷 Переименование
-
-Переименование происходит **только если файл уже существует** в целевой папке.
-
-Пример: `IMG_1234.jpg → IMG_1234-2023-07-21-14-32.jpg`
+1. The script goes through all files in `SOURCE_DIR`
+2. For each file:
+   - gets date from EXIF
+   - if not available → uses `mtime`
+3. Determines destination folder: `YYYY-MM`
+4. Moves the file
 
 ---
 
-## ⚠️ Важно
+## 🏷 Renaming
 
-- Файлы **перемещаются**, а не копируются
-- Исходная структура папок не сохраняется
-- Рекомендуется:
-  - протестировать на небольшой выборке
-  - или сделать бэкап
+Renaming occurs **only if the file already exists** in the target folder.
+
+Example: `IMG_1234.jpg → IMG_1234-2023-07-21-14-32.jpg`
 
 ---
 
-## ⚡ Производительность
+## ⚠️ Important
 
-- Используется ограниченный параллелизм (`p-limit`)
-- Рекомендуется для больших архивов (100–300+ ГБ)
-- Не увеличивайте concurrency слишком сильно (оптимально: 3–10)
+- Files are **moved**, not copied
+- Original folder structure is not preserved
+- Recommended:
+  - test on a small sample
+  - or make a backup
 
 ---
 
-## Лицензия
+## ⚡ Performance
+
+- Uses limited parallelism (`p-limit`)
+- Recommended for large archives (100–300+ GB)
+- Don't increase concurrency too much (optimal: 3–10)
+
+---
+
+## License
 
 MIT
