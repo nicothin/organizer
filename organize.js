@@ -6,22 +6,16 @@ const pLimit = require('p-limit');
 const SOURCE_DIR = '/media/nicothin/largeBackup/vera/';
 const TARGET_BASE = '/media/nicothin/largeBackup/vera/photoarchive';
 
-// Ограничение параллелизма (подбирается)
 const limit = pLimit(5);
 
-// Разрешённые расширения (фото + видео)
 const ALLOWED_EXT = [
-  // images
   '.jpg', '.jpeg', '.png', '.heic', '.heif', '.webp', '.tiff', '.tif',
-  // RAW formats
   '.cr2', '.cr3', '.nef', '.arw', '.dng', '.rw2', '.orf',
-  // video
   '.mp4', '.mov', '.avi', '.mkv', '.3gp', '.mts', '.m2ts', '.wmv'
 ];
 
 function formatDate(date) {
   const pad = (n) => String(n).padStart(2, '0');
-
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}-${pad(date.getHours())}-${pad(date.getMinutes())}`;
 }
 
@@ -47,7 +41,6 @@ async function getDate(filePath) {
     console.warn(`EXIF ошибка: ${filePath} → fallback на mtime`);
   }
 
-  // fallback всегда
   const stats = await fs.stat(filePath);
   return stats.mtime;
 }
@@ -65,19 +58,27 @@ async function processFile(fullPath) {
   await fs.ensureDir(targetDir);
 
   const parsed = path.parse(fullPath);
-  const dateSuffix = formatDate(date);
+  const originalTargetPath = path.join(targetDir, parsed.base);
 
-  const newName = `${parsed.name}-${dateSuffix}${parsed.ext}`;
-  let finalPath = path.join(targetDir, newName);
+  let finalPath = originalTargetPath;
 
-  // защита от коллизий
-  let counter = 1;
-  while (await fs.pathExists(finalPath)) {
+  // Переименовываем ТОЛЬКО если есть конфликт
+  if (await fs.pathExists(originalTargetPath)) {
+    const dateSuffix = formatDate(date);
+
     finalPath = path.join(
       targetDir,
-      `${parsed.name}-${dateSuffix}-${counter}${parsed.ext}`
+      `${parsed.name}-${dateSuffix}${parsed.ext}`
     );
-    counter++;
+
+    let counter = 1;
+    while (await fs.pathExists(finalPath)) {
+      finalPath = path.join(
+        targetDir,
+        `${parsed.name}-${dateSuffix}-${counter}${parsed.ext}`
+      );
+      counter++;
+    }
   }
 
   await fs.move(fullPath, finalPath);
@@ -90,7 +91,6 @@ async function processDir(dir) {
   const tasks = items.map(item => limit(async () => {
     const fullPath = path.join(dir, item);
 
-    // безопасная проверка, что мы НЕ внутри TARGET_BASE
     const relative = path.relative(TARGET_BASE, fullPath);
     if (!relative.startsWith('..') && !path.isAbsolute(relative)) {
       return;
