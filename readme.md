@@ -1,20 +1,15 @@
 # 📸 Photo Archive Organizer
 
-Script for sorting photos and videos by capture date (EXIF) into `YYYY-MM` structure.
-
----
+A smart tool for automatically sorting photos and videos by creation date into `YYYY-MM` folder structure.
 
 ## 🚀 Features
 
-- Recursive directory traversal
-- Date detection:
-  - EXIF (`DateTimeOriginal`, `CreateDate`, `CreationDate`)
-  - fallback → `mtime`
-- Sorting into folders: `photoarchive/YYYY-MM/`
-- Renaming **only when there's a name conflict**
-- Limited parallelism (suitable for large archives)
-
----
+- **Recursive directory processing**.
+- **Date detection** from EXIF data (DateTimeOriginal, CreateDate, CreationDate) with fallback to mtime.
+- **Automatic renaming** only when file names conflict.
+- **Limited parallelization** (suitable for large archives).
+- **Support for various photo and video formats**.
+- **Error handling** with retries and logging.
 
 ## 📁 Supported Formats
 
@@ -23,7 +18,7 @@ Script for sorting photos and videos by capture date (EXIF) into `YYYY-MM` struc
 - `.heic`, `.heif`
 - `.webp`, `.tiff`, `.tif`
 
-### RAW
+### RAW photos
 - `.cr2`, `.cr3`, `.nef`, `.arw`
 - `.dng`, `.rw2`, `.orf`
 
@@ -33,72 +28,57 @@ Script for sorting photos and videos by capture date (EXIF) into `YYYY-MM` struc
 - `.3gp`, `.mts`, `.m2ts`
 - `.wmv`
 
-File extensions are case-insensitive (`.JPG` = `.jpg`)
-
----
+Format is case-insensitive.
 
 ## ⚙️ Installation
 
 ```bash
+git clone git@github.com:nicothin/organizer.git
+cd SOME_DIRECTORY
+
 npm install
 ```
 
----
-
 ## ▶️ Usage
-
-Specify paths in the file:
-
-```js
-const SOURCE_DIR = '/path/to/source';
-const TARGET_BASE = '/path/to/photoarchive';
-```
-
-Run:
 
 ```bash
 npm run
 ```
 
----
+### Path Configuration
+
+Before running the script, it will ask you for:
+1. Source directory path.
+2. Target directory path.
+3. Move or copy files.
 
 ## 📦 How It Works
 
-1. The script goes through all files in `SOURCE_DIR`
+1. The script recursively walks through all files in the source directory.
 2. For each file:
-   - gets date from EXIF
-   - if not available → uses `mtime`
-3. Determines destination folder: `YYYY-MM`
-4. Moves the file
+   - Extracts date from EXIF data.
+   - If EXIF is not available — uses file modification date (mtime).
+3. Determines the target folder in `YYYY-MM` format.
+4. Moves or copies the file to the target folder.
+5. When file name conflicts occur, automatically adds a date suffix.
 
----
+## 🏷 File Renaming
 
-## 🏷 Renaming
+Renaming occurs **only when there is a name conflict** in the target folder.
 
-Renaming occurs **only if the file already exists** in the target folder.
-
-Example: `IMG_1234.jpg → IMG_1234-2023-07-21-14-32.jpg`
-
----
-
-## ⚠️ Important
-
-- Files are **moved**, not copied
-- Original folder structure is not preserved
-- Recommended:
-  - test on a small sample
-  - or make a backup
-
----
+Example:
+- `IMG_1234.jpg` → `IMG_1234-2023-07-21-14-32.jpg`
 
 ## ⚡ Performance
 
-- Uses limited parallelism (`p-limit`)
-- Recommended for large archives (100–300+ GB)
-- Don't increase concurrency too much (optimal: 3–10)
+- Uses limited parallelization (`p-limit`).
+- Suitable for large archives (100+ GB).
+- Optimal number of parallel operations: 3–10.
 
----
+## 🛠 Requirements
 
-## License
+- Node.js (version 14 or higher)
+
+## 📄 License
 
 MIT
